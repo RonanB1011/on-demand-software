@@ -10,7 +10,6 @@ public class Order {
   private final Date dateTimeOfSubmission;
   private Map<String, Integer> orderItems;
   private final UUID key;
-  private Customer customer;
 
   private OrderStatus status;
   private List<OrderStatus> statusHistory;
