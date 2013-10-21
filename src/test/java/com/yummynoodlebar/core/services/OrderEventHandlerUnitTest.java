@@ -24,4 +24,82 @@ public class OrderEventHandlerUnitTest {
     uut = new OrderEventHandler(mockOrdersMemoryRepository);
   }
 
+  @Test
+  public void addANewOrderToTheSystem() {
+
+    when(mockOrdersMemoryRepository.save(any(Order.class))).thenReturn(new Order(new Date()));
+
+    CreateOrderEvent ev = new CreateOrderEvent(new OrderDetails());
+
+    uut.createOrder(ev);
+
+    verify(mockOrdersMemoryRepository).save(any(Order.class));
+    verifyNoMoreInteractions(mockOrdersMemoryRepository);
+  }
+
+  @Test
+  public void addTwoNewOrdersToTheSystem() {
+
+    when(mockOrdersMemoryRepository.save(any(Order.class))).thenReturn(new Order(new Date()));
+
+    CreateOrderEvent ev = new CreateOrderEvent(new OrderDetails());
+
+    uut.createOrder(ev);
+    uut.createOrder(ev);
+    verify(mockOrdersMemoryRepository, times(2)).save(any(Order.class));
+    verifyNoMoreInteractions(mockOrdersMemoryRepository);
+  }
+
+  @Test
+  public void removeAnOrderFromTheSystemFailsIfNotPresent() {
+    UUID key = UUID.randomUUID();
+
+    when(mockOrdersMemoryRepository.findById(key)).thenReturn(null);
+
+
+  }
+
+  @Test
+  public void removeAnOrderFromTheSystemFailsIfNotPermitted() {
+    UUID key = UUID.randomUUID();
+
+    Order order = new Order(new Date()) {
+      @Override
+      public boolean canBeDeleted() {
+        return false;
+      }
+    };
+
+    when(mockOrdersMemoryRepository.findById(key)).thenReturn(order);
+
+    DeleteOrderEvent ev = new DeleteOrderEvent(key);
+
+    OrderDeletedEvent orderDeletedEvent = uut.deleteOrder(ev);
+
+    verify(mockOrdersMemoryRepository, never()).delete(ev.getKey());
+
+    assertTrue(orderDeletedEvent.isEntityFound());
+    assertFalse(orderDeletedEvent.isDeletionCompleted());
+    assertEquals(order.getDateTimeOfSubmission(), orderDeletedEvent.getDetails().getDateTimeOfSubmission());
+  }
+
+  @Test
+  public void removeAnOrderFromTheSystemWorksIfExists() {
+
+    UUID key = UUID.randomUUID();
+    Order order = new Order(new Date());
+
+    when(mockOrdersMemoryRepository.findById(key)).thenReturn(order);
+
+    DeleteOrderEvent ev = new DeleteOrderEvent(key);
+
+    OrderDeletedEvent orderDeletedEvent = uut.deleteOrder(ev);
+
+    verify(mockOrdersMemoryRepository).delete(ev.getKey());
+
+    assertTrue(orderDeletedEvent.isEntityFound());
+    assertTrue(orderDeletedEvent.isDeletionCompleted());
+    assertEquals(order.getDateTimeOfSubmission(), orderDeletedEvent.getDetails().getDateTimeOfSubmission());
+  }
+
 }
