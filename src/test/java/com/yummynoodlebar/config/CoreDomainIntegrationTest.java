@@ -29,7 +29,7 @@ public class CoreDomainIntegrationTest {
 
     CreateOrderEvent ev = new CreateOrderEvent(new OrderDetails());
 
-    //orderService.createOrder(ev);
+    orderService.createOrder(ev);
 
     AllOrdersEvent allOrders = orderService.requestAllOrders(new RequestAllOrdersEvent());
 
