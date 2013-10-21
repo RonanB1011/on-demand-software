@@ -31,7 +31,7 @@ public class Order {
   }
 
   public Date getDateTimeOfSubmission() {
-    return dateTimeOfSubmission;
+    return new Date();
   }
 
   public UUID getKey() {
