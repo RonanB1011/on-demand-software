@@ -30,3 +30,5 @@ This is the source project for use in the Simplicity Itself course "On Demand So
 ## For More Information
 
 Contact Simplicity Itself - http://www.simplicityitself.com/contact
+
+Eat all of our shirts!
